@@ -16,6 +16,10 @@ class MainWindow(QMainWindow):
     height = 650
 
     def __init__(self):
+        """
+        Main window that contains 3 tabs in a navigation widget. These tabs are for taking data, plotting data,
+        and controlling devices.
+        """
         QMainWindow.__init__(self)
         self.data_base_path = os.path.join(get.google_drive(), 'data', 'fake')   # base path to data files
 
@@ -110,17 +114,21 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def quit(self):
+        """Exit program"""
+        stop = True
         if self.data_tab.active_file:
-            self.data_tab.stop()
-        exit_question = QMessageBox.critical(self, 'Exiting', 'Are you sure you would like to quit?',
-                                             QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
-        if exit_question == QMessageBox.Yes:
-            self.force_quit = False
-            print('Exiting')
-            self.close()
+            stop = self.data_tab.stop()
+        if stop:
+            exit_question = QMessageBox.critical(self, 'Exiting', 'Are you sure you would like to quit?',
+                                                 QMessageBox.Yes | QMessageBox.Cancel, QMessageBox.Cancel)
+            if exit_question == QMessageBox.Yes:
+                self.force_quit = False
+                print('Exiting')
+                self.close()
 
     @Slot()
     def closeEvent(self, event):
+        """Overrides closeEvent so that there is no force quit"""
         if self.force_quit:
             event.ignore()
             self.quit()
@@ -129,6 +137,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def get_help(self):
+        """Opens HELP Prompt"""
         self.help.exec()
 
 

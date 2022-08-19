@@ -1,3 +1,9 @@
+"""
+Qt GUI application that can open and plot data live as it is generated.
+
+author: Teddy Tortorici
+"""
+
 import get
 import os
 import sys

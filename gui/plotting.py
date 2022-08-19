@@ -1,3 +1,4 @@
+from PySide6.QtGui import QPen
 import pyqtgraph as pg
 
 
@@ -17,10 +18,15 @@ color = {'dark red': (155, 0, 0),
 
 class Plot(pg.PlotWidget):
 
-    data_columns = ['time', 'voltage', 'temperature', 'counts']
-
-    def __init__(self, x_label: str = '', y_label: str = '',
+    def __init__(self, x_label: str, y_label: str, pen: QPen,
                  right_axis: pg.ViewBox = None, date_axis_item: bool = False):
+        """
+        Create a plot widget with some shortcuts
+        :param x_label: Label for the x-axis
+        :param y_label: Label for the y-axis
+        :param right_axis: a view box you wish to plot to the right axis
+        :param date_axis_item: for time.time() style time stamp data on the x-axis
+        """
         super(self.__class__, self).__init__()
         self.x_label = x_label
         self.y_label = y_label
@@ -32,11 +38,12 @@ class Plot(pg.PlotWidget):
             self.getAxis('right').linkToView(right_axis)
             self.setXLink(right_axis)
             self.setLabel('right', right_axis.label)
+            self.addLegend()
         if date_axis_item:
             self.setAxisItems({'bottom': pg.DateAxisItem('bottom')})
 
-        self.curves = [None]
-        self.pens = [None]
+        self.pen = pen
+        self.curve = self.plot(pen=pen, name=y_label)
 
         self.column_data_index_x = []
         self.column_data_index_y = []
@@ -59,11 +66,13 @@ class Plot(pg.PlotWidget):
 
 
 class RightAxisPlot(pg.ViewBox):
-    def __init__(self, label: str = ''):
+    def __init__(self, label: str, pen: QPen):
         super(self.__class__, self).__init__()
         self.label = label
-        self.curves = [None]
-        self.pens = [None]
+
+        self.pen = pen
+        self.curve = pg.PlotCurveItem(pen=self.pens, name=label)
+        self.addItem(self.curve)
         self.column_data_index_y = []
 
     def initialize_plotter(self, columns_data_y):

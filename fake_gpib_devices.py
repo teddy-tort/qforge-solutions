@@ -1,8 +1,32 @@
 import numpy as np
 import time
 from gpib import Fake
+from client_tools import DeviceClient
 
 imported_time = time.time()
+
+
+class FakeVoltageSupply(DeviceClient):
+    def __init__(self):
+        super(self.__class__, self).__init__('VS')
+
+    def set_voltage(self, voltage):
+        time.sleep(1)
+        self.write(f'V: {voltage:.2f}')
+        return f'Set voltage to {voltage:.2f}'
+
+    def read_voltage(self):
+        time.sleep(1)
+        return self.query('V?')
+
+
+class FakePhotonCounter(DeviceClient):
+    def __init__(self):
+        super(self.__class__, self).__init__('PC')
+
+    def read_counts(self):
+        time.sleep(1)
+        return self.query('C?')
 
 
 class LakeShore(Fake):
