@@ -1,3 +1,9 @@
+"""
+Pyqtgraph plot widgets with some presets
+
+@author: Teddy Tortorici
+"""
+
 from PySide6.QtGui import QPen
 import pyqtgraph as pg
 
@@ -33,36 +39,25 @@ class Plot(pg.PlotWidget):
         self.right_axis = right_axis
         self.setLabel('bottom', x_label)
         self.setLabel('left', y_label)
-        if right_axis:
-            self.scene().addItem(right_axis)
-            self.getAxis('right').linkToView(right_axis)
-            self.setXLink(right_axis)
-            self.setLabel('right', right_axis.label)
-            self.addLegend()
         if date_axis_item:
             self.setAxisItems({'bottom': pg.DateAxisItem('bottom')})
 
         self.pen = pen
         self.curve = self.plot(pen=pen, name=y_label)
 
-        self.column_data_index_x = []
-        self.column_data_index_y = []
-
-    def initialize_plotter(self, column_data_x: list, column_data_y: list):
-        if len(column_data_x) != len(column_data_y):
-            raise ValueError("The number of x columns should match the number of y_columns")
-        self.column_data_index_x = column_data_x
-        self.column_data_index_y = column_data_y
-
-        # need as many curves as there are columns to plot
         if self.right_axis:
-            self.right_axis.column_data_index_x        # if there's a right axis, need those too
-        else:
-            self.curves *= len(column_data_y)
+            self.showAxis('right')
+            self.scene().addItem(right_axis)
+            self.getAxis('right').linkToView(right_axis)
+            self.setXLink(right_axis)
+            self.setLabel('right', right_axis.label)
+            self.addLegend()
+            self.update_views()
+            self.getViewBox().sigResized.connect(self.update_views)
 
-        for c in column_data_x:
-            self.curves
-
+    def update_views(self):
+        self.right_axis.setGeometry(self.getViewBox().sceneBoundingRect())
+        self.right_axis.linkedViewChanged(self.getViewBox(), self.right_axis.XAxis)
 
 
 class RightAxisPlot(pg.ViewBox):
@@ -71,9 +66,5 @@ class RightAxisPlot(pg.ViewBox):
         self.label = label
 
         self.pen = pen
-        self.curve = pg.PlotCurveItem(pen=self.pens, name=label)
+        self.curve = pg.PlotCurveItem(pen=self.pen, name=label)
         self.addItem(self.curve)
-        self.column_data_index_y = []
-
-    def initialize_plotter(self, columns_data_y):
-        pass

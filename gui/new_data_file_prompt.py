@@ -1,3 +1,9 @@
+"""
+A prompt to open that takes info on taking data
+
+@author: Teddy Tortorici
+"""
+
 from PySide6.QtWidgets import (QDialog, QGroupBox, QComboBox, QLineEdit, QPushButton, QSpinBox,
                                QDialogButtonBox, QVBoxLayout, QFormLayout, QLabel, QFileDialog)
 from PySide6.QtCore import Slot

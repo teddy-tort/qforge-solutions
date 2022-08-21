@@ -1,13 +1,18 @@
+"""
+A tab widget for taking data in app.py
+
+@author: Teddy Tortorici
+"""
+
 import os.path
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QStackedWidget, QSizePolicy,
-                               QDialog, QMessageBox, QFileDialog)
+                               QDialog, QMessageBox, QFileDialog, QMainWindow)
 from PySide6.QtCore import Slot, Signal
 from PySide6.QtGui import QFont
-from app import MainWindow
 from gui.new_data_file_prompt import NewDataPrompt
 import gui.built_in as built_in
-from data_file2 import NewDataFile, OpenDataFile
+from data_files import DataFileGuiExample as DataFile
 from server import GpibServer
 from client_tools import send as send_client
 import threading
@@ -24,10 +29,9 @@ class SignalWidget(QWidget):
 
 class DataTab(QWidget):
 
-    font = "Arial"
-    fontsize = 12
+    font = QFont("Arial", 12)
 
-    def __init__(self, parent: MainWindow):
+    def __init__(self, parent: QMainWindow):
         """
         Tab for managing the current data file
         :param parent: Is the MainWindow() object
@@ -63,7 +67,7 @@ class DataTab(QWidget):
 
         self.data_text_stream = QTextEdit()     # this will be where data gets printed as it's collected
         self.data_text_stream.setReadOnly(True)
-        self.data_text_stream.setFont(QFont(DataTab.font, DataTab.fontsize))
+        self.data_text_stream.setFont(DataTab.font)
 
         self.bottom_row = QHBoxLayout()         # this will be a row to add widgets to bellow the text stream
         self.bottom_row.addStretch(1)
@@ -116,7 +120,6 @@ class DataTab(QWidget):
         self.data_text_stream.append(text)
         # make the scroll bar scroll with the new text as it fills past the size of the window
         self.data_text_stream.verticalScrollBar().setValue(self.data_text_stream.verticalScrollBar().maximum())
-        # self.data_text_stream.vertical_scroll_bar.set_value(self.data_text_stream.vertical_scroll_bar.maximum())
 
     @Slot()
     def open_file(self):
@@ -151,7 +154,7 @@ class DataTab(QWidget):
                 self.write(f'Opening file "{filename}"')
                 self.write(f'Using averaging setting of {self.dialog.averaging_entry}')
                 self.activate_data_file(filename)
-                self.data = OpenDataFile(filename)
+                self.data = DataFile(filename)
                 self.data_thread.start()
 
     @Slot()
@@ -178,13 +181,13 @@ class DataTab(QWidget):
                 sample_name = self.dialog.sample_name_entry.replace(' ', '_')
                 if not sample_name:
                     sample_name = 'none'
-                filename = '{sample}_{m:02}-{d:02}-{y:04}_{h:02}-{min:02}-{s}'.format(sample=sample_name,
-                                                                                      m=creation_datetime.month,
-                                                                                      d=creation_datetime.day,
-                                                                                      y=creation_datetime.year,
-                                                                                      h=creation_datetime.hour,
-                                                                                      min=creation_datetime.minute,
-                                                                                      s=creation_datetime.second)
+                filename = '{sample}_{m:02}-{d:02}-{y:04}_{h:02}-{min:02}-{s}.csv'.format(sample=sample_name,
+                                                                                          m=creation_datetime.month,
+                                                                                          d=creation_datetime.day,
+                                                                                          y=creation_datetime.year,
+                                                                                          h=creation_datetime.hour,
+                                                                                          min=creation_datetime.minute,
+                                                                                          s=creation_datetime.second)
                 comment = 'Experiment performed on the {setup} setup with sample: {sample}.'.format(
                     setup=self.dialog.setup_choice_entry,
                     sample=self.dialog.sample_name_entry)
@@ -197,7 +200,7 @@ class DataTab(QWidget):
 
                 file_path = os.path.join(self.parent.data_base_path, filename)
                 self.activate_data_file(file_path)
-                self.data = NewDataFile(file_path, comment)
+                self.data = DataFile(file_path, comment)
                 self.data_thread.start()
 
     def activate_data_file(self, filename):

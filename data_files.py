@@ -26,8 +26,8 @@ class CSVFile:
         """
 
         """MAKE SURE THE FILE NAME IS VALID"""
-        name.rstrip(CSVFile.file_type)
-        name.replace(".", "")
+        name = name.rstrip(CSVFile.file_type)
+        name = name.replace(".", "")
         name += CSVFile.file_type
         self.filename = os.path.join(path, name)
 
@@ -180,6 +180,7 @@ class DataFileGuiExample(CSVFile):
         :param comment: an optional comment to write to the script
         :param port: the port number to connect to to communicate with the GPIB server
         """
+        print(file_path)
         """CREATE OBJECTS FOR DEVICE CLIENTS"""
         self.ls = LakeShore(331, port=port)
         self.vs = FakeVoltageSupply()

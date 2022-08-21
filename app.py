@@ -1,3 +1,9 @@
+"""
+Example GUI application for taking data, plotting, and controlling instruments
+
+@author: Teddy Tortorici
+"""
+
 import get
 import os
 import sys
@@ -6,6 +12,7 @@ from PySide6.QtCore import Slot
 from PySide6.QtGui import QIcon, QAction
 from gui.tab_data import DataTab
 from gui.tab_plot import PlotTab
+from gui.tab_control import ControlTab
 from gui.help_prompt import HelpPrompt
 import gui.built_in as built_in
 
@@ -43,10 +50,14 @@ class MainWindow(QMainWindow):
         # Create Tabs
         self.data_tab = DataTab(self)
         self.plot_tab = PlotTab(self)
+        self.control_tab = ControlTab(self)
+        tabs = [(self.data_tab, "&Data"),
+                (self.plot_tab, "&Plots"),
+                (self.control_tab, "&Control")]
 
         # Add tabs
-        self.tabs.addTab(self.data_tab, "&Data")
-        self.tabs.addTab(self.plot_tab, "&Plots")
+        for tab, name in tabs:
+            self.tabs.addTab(tab, name)
 
         """MENU BAR"""
         main_menu = self.menuBar()
@@ -67,7 +78,7 @@ class MainWindow(QMainWindow):
         self.open_file_action.setShortcut('CTRL+O')
         self.open_file_action.triggered.connect(self.data_tab.open_file)
         self.exit_action = QAction(built_in.icon(self, 'BrowserStop'),'E&xit', self)
-        self.open_file_action.setShortcut('CTRL+Q')
+        self.exit_action.setShortcut('CTRL+Q')
         self.exit_action.triggered.connect(self.quit)
         # Data menu actions
         self.play_action = QAction(built_in.icon(self, 'MediaPlay'), 'Take &Data', self)

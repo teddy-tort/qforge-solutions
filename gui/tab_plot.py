@@ -1,6 +1,11 @@
-from PySide6.QtWidgets import QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QToolButton
+"""
+A tab widget for plotting data in app.py
+
+@author: Teddy Tortorici
+"""
+
+from PySide6.QtWidgets import QWidget, QGridLayout, QVBoxLayout, QHBoxLayout, QToolButton, QMainWindow
 from PySide6.QtCore import Slot
-from app import MainWindow
 import gui.built_in as built_in
 from gui.plotting import Plot, RightAxisPlot
 import sys
@@ -12,9 +17,9 @@ class PlotTab(QWidget):
 
     data_columns = ['time', 'voltage', 'temperature', 'counts']
     colors = [(0, 0, 255), (255, 0, 0), (0, 0, 0)]
-    pens = [pg.mkPen(color, width=2, style=Qt.SolidLine) for color in PlotTab.colors]
+    pens = dict(zip(data_columns[1:], [pg.mkPen(color, width=2) for color in colors]))
 
-    def __init__(self, parent: MainWindow, link_x: bool = True, link_y: bool = False):
+    def __init__(self, parent: QMainWindow, link_x: bool = True, link_y: bool = False):
         """
         Tab for plotting
         :param parent: Is the MainWindow() object
@@ -36,11 +41,11 @@ class PlotTab(QWidget):
         plot_layout = QGridLayout()
         button_layout = QVBoxLayout()
 
-        self.plot_TvV = Plot('Voltage (V)', 'Temperature (K)')
-        self.plot_CvT = Plot('Temperature (K)', 'Voltage (V)')
-        self.plot_Tvt = Plot('Time', 'Temperature (K)', date_axis_item=True)
-        self.plot_Vvt = RightAxisPlot('Voltage (V)')
-        self.plot_Cvt = Plot('Time', 'Counts', right_axis=self.plot_Vvt, date_axis_item=True)
+        self.plot_TvV = Plot('Voltage (V)', 'Temperature (K)', pen=PlotTab.pens['temperature'])
+        self.plot_CvT = Plot('Temperature (K)', 'Voltage (V)', pen=PlotTab.pens['voltage'])
+        self.plot_Tvt = Plot('Time', 'Temperature (K)', pen=PlotTab.pens['temperature'], date_axis_item=True)
+        self.plot_Vvt = RightAxisPlot('Voltage (V)', pen=PlotTab.pens['voltage'])
+        self.plot_Cvt = Plot('Time', 'Counts', pen=PlotTab.pens['counts'], right_axis=self.plot_Vvt, date_axis_item=True)
 
         # Will place in the gid to mimic the list of lists
         plots = [[self.plot_TvV, self.plot_Tvt],
