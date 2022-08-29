@@ -9,7 +9,7 @@ import os.path
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QStackedWidget, QSizePolicy,
                                QDialog, QMessageBox, QFileDialog, QMainWindow)
 from PySide6.QtCore import Slot, Signal
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QTextCursor
 from gui.new_data_file_prompt import NewDataPrompt
 import gui.built_in as built_in
 from data_files import DataFileGuiExample as DataFile
@@ -108,16 +108,18 @@ class DataTab(QWidget):
         self.layout.addWidget(self.data_text_stream)
         self.layout.addLayout(self.bottom_row)
 
-    def write(self, text: str):
+    def write(self, text: str, end: str = "\n"):
         """Writes to the GUI by using the write_thread widget"""
         # print(f'sending "{text}" to thread')
-        self.writer_signaler.message.emit(text)
+        self.writer_signaler.message.emit(text + end)
 
     @Slot(str)
     def write_from_thread(self, text: str):
         """Writes to GUI from the write_thread object attribute"""
         # print(f'received "{text}" fom thread')
-        self.data_text_stream.append(text)
+        self.data_text_stream.moveCursor(QTextCursor.End)
+        self.data_text_stream.insertPlainText(text)
+        # self.data_text_stream.moveCursor(QTextCursor.End)
         # make the scroll bar scroll with the new text as it fills past the size of the window
         self.data_text_stream.verticalScrollBar().setValue(self.data_text_stream.verticalScrollBar().maximum())
 
