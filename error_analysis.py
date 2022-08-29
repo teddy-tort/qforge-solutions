@@ -1,24 +1,22 @@
 import sympy as sym
-from sympy.abc import x, y
+from sympy.abc import z, lamda
+from sympy.abc import x as z_0
+from sympy.abc import y as w_0
 import numpy as np
+from print_uncertainty import print_uncertainty as print_u
 
-pm = "\u00B1"       # plus minus symbol unicode
+w_expr = w_0 * sym.sqrt(1 + ((z - z_0) / (sym.pi * w_0 ** 2 / lamda))**2)
+wrt = (z, lamda, z_0, w_0)
+vals = (2, 632.8e-9, -.03, 1.9e-6)
+uncs = (.005, 0.1e-9, .04, 0.09e-6)
+w = w_expr.evalf(subs=dict(zip(wrt, vals)))     # value of z evaluated from the expression
 
-z_expr = x ** 2 + y ** 2    # expression for z
-wrt = (x, y)  # with respect to what variables
-x_val = 20                  # value of x
-del_x = 0.15                # uncertainty of x
-y_val = 12                  # value of y
-del_y = 0.2                 # uncertainty of y
-dels = (del_x, del_y)       # uncertainties for zipping
-z_val = z_expr.evalf(subs={x: x_val, y: y_val})     # value of z evaluated from the expression
+unc_w_terms = np.zeros(len(wrt))      # how many terms in the sum for calculating the uncertainty
+for ii, var, uncertainty in zip(range(len(wrt)), wrt, uncs):
+    derivative = sym.diff(w_expr, var)
+    derivative_at_xy = derivative.evalf(subs=dict(zip(wrt, vals)))
+    unc_w_terms[ii] = (derivative_at_xy * uncertainty) ** 2
+unc_w = np.sqrt(np.sum(unc_w_terms))
 
-del_z_terms = np.zeros(len(wrt))      # how many terms in the sum for calculating the uncertainty
-for ii, var, uncertainty in zip(range(len(wrt)), wrt, dels):
-    derivative = sym.diff(z_expr, var)
-    derivative_at_xy = derivative.evalf(subs={x: x_val, y: y_val})
-    del_z_terms[ii] = (derivative_at_xy * uncertainty) ** 2
-del_z = np.sqrt(np.sum(del_z_terms))
-
-print(f"{z_val} {pm} {del_z}")
+print_u(w, unc_w, "m")
 
