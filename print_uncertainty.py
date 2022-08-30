@@ -10,11 +10,11 @@ pm = "\u00B1"       # plus minus symbol unicode
 
 def print_uncertainty(value: float, uncertainty: float, units: str = None) -> str:
     """
-    print a value with it's uncertainty
-    :param value:
-    :param uncertainty:
-    :param units:
-    :return:
+    print a value with its uncertainty
+    :param value: The value of the number
+    :param uncertainty: the uncertainty of that number
+    :param units: optional units to tack on
+    :return: the string that was printed
     """
     # put uncertainty in scientific notation -> uncertainty = unc_sci_not * 10^unc_sci_not_order
     unc_sci_not = uncertainty / 10 ** int(np.floor(np.log10(uncertainty)))
