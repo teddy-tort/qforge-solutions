@@ -24,7 +24,7 @@ def calc_unc(function, wrt: tuple[str], vals: tuple[float], uncs: tuple[float],
 def print_unc(value: float, uncertainty: float, units: str = None, sci_not: bool = False) -> str:
     """
     Print a number and its uncertainty with the proper amount of significant digits.
-    :param value: the value of the number you are printing...
+    :param value: the value of the number you are printing.
     :param uncertainty: the value of the uncertainty of the above value.
     :param units: optionally can pass in a string to tack on for the units of the number.
     :param sci_not: optionally can make this value True to put the number in scientific notation.
