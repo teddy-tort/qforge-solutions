@@ -4,7 +4,21 @@ Print a number with uncertainty with proper sig figs
 @author: Teddy Tortorici
 """
 import numpy as np
+import sympy as sym
 
+
+def calc_unc(function, wrt: tuple[str], vals: tuple[float], uncs: tuple[float],
+             units: str = None, sci_not:bool = False):
+    wrt = [sym.symbols(var) for var in wrt]
+    z = function(wrt)
+    z_val = float(z.evalf(subs=dict(zip(wrt, vals))))
+    var_z_terms = np.zeros(len(wrt))
+    for ii, var, unc in zip(range(len(wrt)), wrt, uncs):
+        derivative = sym.diff(z, var)
+        derivative_at = float(derivative.evalf(subs=dict(zip(wrt, vals))))
+        var_z_terms[ii] = (derivative_at * unc) ** 2
+    unc_z = np.sqrt(np.sum(var_z_terms))
+    return print_unc(z_val, unc_z, units, sci_not)
 
 def print_unc(value: float, uncertainty: float, units: str = None, sci_not: bool = False) -> str:
     """
