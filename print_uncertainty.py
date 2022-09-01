@@ -8,7 +8,7 @@ import sympy as sym
 
 
 def calc_unc(function, wrt: tuple[str], vals: tuple[float], uncs: tuple[float],
-             units: str = None, sci_not:bool = False):
+             units: str = None, sci_not: bool = False):
     wrt = [sym.symbols(var) for var in wrt]
     z = function(wrt)
     z_val = float(z.evalf(subs=dict(zip(wrt, vals))))
@@ -19,6 +19,7 @@ def calc_unc(function, wrt: tuple[str], vals: tuple[float], uncs: tuple[float],
         var_z_terms[ii] = (derivative_at * unc) ** 2
     unc_z = np.sqrt(np.sum(var_z_terms))
     return print_unc(z_val, unc_z, units, sci_not)
+
 
 def print_unc(value: float, uncertainty: float, units: str = None, sci_not: bool = False) -> str:
     """
@@ -77,4 +78,4 @@ def print_unc(value: float, uncertainty: float, units: str = None, sci_not: bool
 
 
 if __name__ == "__main__":
-    print_unc(0.001, 0.0001, units="m", sci_not=True)
+    print_unc(0.0013456789654345678, 0.0002, units="m")
