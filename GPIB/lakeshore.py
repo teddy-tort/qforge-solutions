@@ -38,7 +38,7 @@ class Client(client.DeviceClient):
     def read_pid(self, loop: int = 1) -> tuple:
         """Returns in units of Kelvin per minute"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         msg_back = self.query(f"PID? {int(loop)}")
         pid = [float(element) for element in msg_back.split(',')]
         return tuple(pid)
@@ -46,19 +46,19 @@ class Client(client.DeviceClient):
     def read_ramp_speed(self, loop: int = 1) -> float:
         """Kelvin per minute"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         return float(self.query(f"RAMP? {loop}").split(',')[1])
 
     def read_ramp_status(self, loop: int = 1) -> bool:
         """Check whether the setpoint is ramping or not"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         return bool(int(self.query(f"RAMPST? {loop}")))
 
     def read_setpoint(self, loop=1):
         """Return the value of setpoint in current units"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         return float(self.query(f"SETP? {loop}"))
 
     def read_temperature(self, channel : str = 'A', units : str = 'K') -> float:
@@ -69,9 +69,9 @@ class Client(client.DeviceClient):
 
         # Ensure the variables are valid
         if channel not in ['A', 'B']:
-            raise IOError(f"Invalid channel: {channel}")
+            raise ValueError(f"Invalid channel: {channel}")
         if units not in ['K', 'C']:
-            raise IOError(f"Invalid units: {units}")
+            raise ValueError(f"Invalid units: {units}")
         return float(self.query(f"{units}RDG? {channel}"))
 
     def set_heater_range(self, power_range: float, override: bool = False):
@@ -88,7 +88,7 @@ class Client(client.DeviceClient):
 
     def set_pid(self, p='', i='', d='', loop=1):
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         if p == '':
             p = self.PID[loop][0]
         else:
@@ -106,7 +106,7 @@ class Client(client.DeviceClient):
     def set_ramp_speed(self, kelvin_per_min, loop=1):
         """Set the ramp speed to reach set point in Kelvin per min"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         self.write(f"RAMP {loop}, 1, {kelvin_per_min}")
 
     def set_setpoint(self, value, loop=1):
@@ -114,7 +114,7 @@ class Client(client.DeviceClient):
         loop: specifies which loop to configure.
         value: the value for the setpoint (in whatever units the setpoint is using"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         self.write(f"SETP {loop}, {float(value)}")
 
 
@@ -144,7 +144,7 @@ class GPIB(gpib.Device):
     def read_pid(self, loop: int = 1) -> tuple:
         """Returns in units of Kelvin per minute"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         msg_back = self.query(f"PID? {int(loop)}")
         pid = [float(element) for element in msg_back.split(',')]
         return tuple(pid)
@@ -152,19 +152,19 @@ class GPIB(gpib.Device):
     def read_ramp_speed(self, loop: int = 1) -> float:
         """Kelvin per minute"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         return float(self.query(f"RAMP? {loop}").split(',')[1])
 
     def read_ramp_status(self, loop: int = 1) -> bool:
         """Check whether the setpoint is ramping or not"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         return bool(int(self.query(f"RAMPST? {loop}")))
 
     def read_setpoint(self, loop=1):
         """Return the value of setpoint in current units"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         return float(self.query(f"SETP? {loop}"))
 
     def read_temperature(self, channel : str = 'A', units : str = 'K') -> float:
@@ -175,9 +175,9 @@ class GPIB(gpib.Device):
 
         # Ensure the variables are valid
         if channel not in ['A', 'B']:
-            raise IOError(f"Invalid channel: {channel}")
+            raise ValueError(f"Invalid channel: {channel}")
         if units not in ['K', 'C']:
-            raise IOError(f"Invalid units: {units}")
+            raise ValueError(f"Invalid units: {units}")
         return float(self.query(f"{units}RDG? {channel}"))
 
     def set_heater_range(self, power_range: float, override: bool = False):
@@ -194,7 +194,7 @@ class GPIB(gpib.Device):
 
     def set_pid(self, p='', i='', d='', loop=1):
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         if p == '':
             p = self.PID[loop][0]
         else:
@@ -212,7 +212,7 @@ class GPIB(gpib.Device):
     def set_ramp_speed(self, kelvin_per_min, loop=1):
         """Set the ramp speed to reach set point in Kelvin per min"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         self.write(f"RAMP {loop}, 1, {kelvin_per_min}")
 
     def set_setpoint(self, value, loop=1):
@@ -220,7 +220,7 @@ class GPIB(gpib.Device):
         loop: specifies which loop to configure.
         value: the value for the setpoint (in whatever units the setpoint is using"""
         if loop != 1 and loop != 2:
-            raise IOError(f"invalid loop: {loop}")
+            raise ValueError(f"invalid loop: {loop}")
         self.write(f"SETP {loop}, {float(value)}")
 
 

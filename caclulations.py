@@ -34,10 +34,13 @@ def heisenberg_pair(uncertainty: float, variable: str) -> tuple:
     eV/c for momentum,
     eV for energy,
     fs for time
+    :param uncertainty: the value of uncertainty of a given variable
+    :param variable: name of the variable (x, p, E, or t)
+    :return: the value of uncertainty of the "partner" variable, and it's name
     """
     variable = variable.lower()
     conv = 1.
-    if variable == 'c' or 'pos' in variable:
+    if variable == 'x' or 'pos' in variable:
         pair = 'momentum'
         conv = c
     elif variable == 'p' or 'mom' in variable:
